@@ -1,3 +1,5 @@
+package lesson1;
+
 public class Person {
     private String firstName;
     private String lastName;
@@ -32,7 +34,7 @@ public class Person {
     public void setAge(int age) {
         if (age < 0) {
             throw new IllegalArgumentException
-                    ("Person's age haven't to be negative");
+                    ("lesson1.Person's age haven't to be negative");
         }
         this.age = age;
     }
