@@ -1,16 +1,52 @@
 package lesson4;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
-public class MyLinkedList<Item> {
-    private Node last = null;
+public class MyLinkedList<Item> implements Iterable<Item> {
+    private class MyLinkedListIterator implements Iterator<Item>{
+
+        private Node current = first;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public Item next() {
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
+            Item item = current.item;
+            current = current.next;
+            return item;
+        }
+
+        @Override
+        public void remove() {
+             while (hasNext()){
+
+             }
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super Item> action) {
+
+        }
+    }
+
+    public Iterator<Item> iterator() {
+        return new MyLinkedListIterator();
+    }
 
     private class Node {
         Item item;
         Node next;
         Node previous;
 
-        public Node(Item item, Node next, Node previous) {
+        Node(Item item, Node next, Node previous) {
             this.item = item;
             this.next = next;
             this.previous = previous;
@@ -20,13 +56,14 @@ public class MyLinkedList<Item> {
 
     private int size = 0;
     private Node first = null;
+    private Node last = null;
 
-    public int get() {
+    public int size() {
         return size;
     }
 
     public boolean isEmpty() {
-        return first == null;
+        return size == 0;
     }
 
     public void insertFirst(Item item) {
@@ -79,7 +116,7 @@ public class MyLinkedList<Item> {
         return last.item;
     }
 
-    public Item deleteLast() {
+    private Item deleteLast() {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
@@ -128,10 +165,52 @@ public class MyLinkedList<Item> {
         while (current != null && !current.item.equals(item)) {
             current = current.next;
         }
-        if (current == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return current != null;
     }
+
+    public Item delete(Item item) {
+        Node current = first;
+
+        while (current != null && !current.item.equals(item)) {
+            current = current.next;
+        }
+        if (current == null) {
+            return null;
+        }
+        if (current == first) {
+            return deleteFirst();
+        } else if (current == last) {
+            return deleteLast();
+        }
+        current.previous.next = current.next;
+        current.next.previous = current.previous;
+        size--;
+        current.next = null;
+        current.previous = null;
+        return item;
+    }
+
+    public void insert(int index, Item item) {
+        if (index < 0 || index > size) {
+            throw new IllegalArgumentException();
+        }
+        if (index == 0) {
+            insertFirst(item);
+            return;
+        } else if (index == size) {
+            insertLast(item);
+            return;
+        }
+        int currentIndex = 0;
+        Node current = first;
+        while (currentIndex < index) {
+            current = current.next;
+            currentIndex++;
+        }
+        Node newNode = new Node(item, current, current.previous);
+        current.previous.next = newNode;
+        current.previous = newNode;
+        size++;
+    }
+
 }
